@@ -41,13 +41,14 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                       ),
                     const SizedBox(height: 8),
                     Text(
-                      _showResultOnly ? _result : (_displayValue.isEmpty ? " " : _displayValue),
+                      _displayValue.isNotEmpty ? _displayValue : _result,
                       style: TextStyle(
                         fontSize: _showResultOnly ? 64 : 48,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                       textAlign: TextAlign.right,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -145,6 +146,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 
   void _onEnter() {
     try {
+      // Validate the expression
       if (_expression.isEmpty || _expression.trim().split('').every((char) => isOperator(char))) {
         throw Exception('Error');
       }
@@ -154,36 +156,53 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       int closeParens = ')'.allMatches(_expression).length;
       _expression += ')' * (openParens - closeParens);
 
-
-
+      // Replace custom operators with valid math symbols
       String parsedExpression = _expression
           .replaceAll(Btn.multiply, '*')
           .replaceAll(Btn.divide, '/')
           .replaceAll(Btn.per, '/100');
 
+
+      // Check for division by zero
+      if (RegExp(r'/\s*0(\s|$|\))').hasMatch(parsedExpression)) {
+        print("Division by zero detected!");
+        throw Exception('Division by zero');
+      }
+
+      // Parse and evaluate the expression
       Parser parser = Parser();
       Expression exp = parser.parse(parsedExpression);
       ContextModel cm = ContextModel();
       double eval = exp.evaluate(EvaluationType.REAL, cm);
 
-      if (_expression.contains('/0')) {
-        throw Exception('Error');
+      String formattedResult = eval.toStringAsFixed(6);
+      if (formattedResult.contains('.')) {
+        formattedResult = formattedResult.replaceAll(RegExp(r'0*$'), '').replaceAll(RegExp(r'\.$'), '');
+      }
+      if (formattedResult.length > 10) {
+        formattedResult = eval.toStringAsExponential(6);
       }
 
+
+      // Update state with the result
       setState(() {
-        _result = eval.toString();  // Show result in the display value
+        _result = formattedResult;  // Show result in the display value
         _displayValue = _result;    // Display the result
         _expression = '';           // Clear the expression
         _showResultOnly = true;
       });
     } catch (e) {
+      print("Error caught: $e");
+      // Handle errors
       setState(() {
-        _displayValue = 'Error';
-        _result = '';
-        _showResultOnly = true;
+        _displayValue = 'Error'; // Display "Error"
+        _result = '';            // Clear any previous result
+        _expression = '';        // Clear the
+        _showResultOnly = true;  // Ensure result mode is activated
       });
     }
   }
+
 
   void _onClear() {
     setState(() {
