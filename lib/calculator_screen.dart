@@ -34,26 +34,44 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     if (!_showResultOnly)
-                      Text(
-                        _expression.isEmpty ? " " : _expression,
-                        style: const TextStyle(fontSize: 36, color: Colors.white54),
-                        textAlign: TextAlign.right,
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        reverse: true, // Ensures focus remains at the end of the expression
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              _expression.isEmpty ? " " : _expression,
+                              style: const TextStyle(fontSize: 36, color: Colors.white54),
+                              textAlign: TextAlign.right,
+                            ),
+                          ],
+                        ),
                       ),
                     const SizedBox(height: 8),
-                    Text(
-                      _displayValue.isNotEmpty ? _displayValue : _result,
-                      style: TextStyle(
-                        fontSize: _showResultOnly ? 64 : 48,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      reverse: true, // Ensures focus remains at the end of the result
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            _displayValue.isNotEmpty ? _displayValue : _result,
+                            style: TextStyle(
+                              fontSize: _showResultOnly ? 64 : 48,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            textAlign: TextAlign.right,
+                          ),
+                        ],
                       ),
-                      textAlign: TextAlign.right,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
               ),
             ),
+
             Wrap(
               children: Btn.buttonValues.map(
                     (value) => SizedBox(
@@ -176,6 +194,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       double eval = exp.evaluate(EvaluationType.REAL, cm);
 
       String formattedResult = eval.toStringAsFixed(6);
+
       if (formattedResult.contains('.')) {
         formattedResult = formattedResult.replaceAll(RegExp(r'0*$'), '').replaceAll(RegExp(r'\.$'), '');
       }
