@@ -180,6 +180,12 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           .replaceAll(Btn.divide, '/')
           .replaceAll(Btn.per, '/100');
 
+      // Check for invalid square root arguments
+      RegExp sqrtNegativeCheck = RegExp(r'sqrt\((\s*-.*?\s*)\)');
+      if (sqrtNegativeCheck.hasMatch(parsedExpression)) {
+        print("Negative value under square root detected!");
+        throw Exception('Error');
+      }
 
       // Check for division by zero
       if (RegExp(r'/\s*0(\s|$|\))').hasMatch(parsedExpression)) {
@@ -193,15 +199,14 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       ContextModel cm = ContextModel();
       double eval = exp.evaluate(EvaluationType.REAL, cm);
 
+      // Format the result for display
       String formattedResult = eval.toStringAsFixed(6);
-
       if (formattedResult.contains('.')) {
         formattedResult = formattedResult.replaceAll(RegExp(r'0*$'), '').replaceAll(RegExp(r'\.$'), '');
       }
       if (formattedResult.length > 10) {
         formattedResult = eval.toStringAsExponential(6);
       }
-
 
       // Update state with the result
       setState(() {
@@ -216,11 +221,12 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       setState(() {
         _displayValue = 'Error'; // Display "Error"
         _result = '';            // Clear any previous result
-        _expression = '';        // Clear the
+        _expression = '';        // Clear the expression
         _showResultOnly = true;  // Ensure result mode is activated
       });
     }
   }
+
 
 
   void _onClear() {
