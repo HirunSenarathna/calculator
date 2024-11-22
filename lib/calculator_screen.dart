@@ -158,8 +158,18 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       } else if (value == Btn.squareRoot) {
         _expression += 'sqrt(';// Add "sqrt(" to the expression
       } else {
+
+        // Prevent invalid numeric formats
+        if (value == '.' &&
+            (_expression.isEmpty || _expression.endsWith('.') || isOperator(_expression[_expression.length - 1]))) {
+          return; // Disallow multiple or misplaced decimal points
+        }
+        if (value == '.' && _expression.split(RegExp(r'[^0-9.]')).last.contains('.')) {
+          return; // Disallow multiple decimals in the same number
+        }
+
         // Avoid consecutive operators
-        if (isOperator(value) && isOperator(_expression[_expression.length - 1])) {
+        if (_expression.isNotEmpty && isOperator(value) && isOperator(_expression[_expression.length - 1])) {
           _expression = _expression.substring(0, _expression.length - 1) + value;
         } else {
           _expression += value;// Append the value to the expression
