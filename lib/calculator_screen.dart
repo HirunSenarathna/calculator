@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:math_expressions/math_expressions.dart';
 import 'button_values.dart';
+import 'history_screen.dart';
 
 class CalculatorScreen extends StatefulWidget {
   const CalculatorScreen({super.key});
@@ -15,6 +16,8 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   String _expression = '';
   String _result = '';
   bool _showResultOnly = false;
+  List<String> _history = []; // List to store calculation history
+
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +26,25 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 
     return Scaffold(
       backgroundColor: Colors.black,// Black background for calculator
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: const Text('Calculator'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: () {
+              // Navigate to history screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HistoryScreen(history: _history
+                  , onClearHistory: _clearHistory,),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -232,10 +254,12 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 
       // Update state with the result
       setState(() {
+        _history.add("$_expression = $formattedResult"); // Save both expression and result
         _result = formattedResult;  // Show result in the display value
         _displayValue = _result;    // Display the result
         _expression = '';           // Clear the expression
         _showResultOnly = true;
+
       });
     } catch (e) {
       print("Error caught: $e");
@@ -257,6 +281,12 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       _expression = '';
       _result = '';
       _showResultOnly = false;
+    });
+  }
+
+  void _clearHistory() {
+    setState(() {
+      _history.clear();
     });
   }
 
