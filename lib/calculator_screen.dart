@@ -1,3 +1,6 @@
+// IM/2021/004
+// Hirun Senarathna
+
 import 'package:flutter/material.dart';
 import 'package:math_expressions/math_expressions.dart';
 import 'button_values.dart';
@@ -284,6 +287,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     });
   }
 
+  //clear history
   void _clearHistory() {
     setState(() {
       _history.clear();

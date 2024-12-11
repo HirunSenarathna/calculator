@@ -1,13 +1,16 @@
+// IM/2021/004
+// Hirun Senarathna
+
 import 'package:flutter/material.dart';
 
 class HistoryScreen extends StatelessWidget {
   final List<String> history;
-  final VoidCallback onClearHistory;
+  final VoidCallback onClearHistory;// callback function to handle clearing the history.
 
   const HistoryScreen({
     Key? key,
-    required this.history,
-    required this.onClearHistory,
+    required this.history, // The list of history data.
+    required this.onClearHistory,// The function to clear history.
   }) : super(key: key);
 
   @override
@@ -21,6 +24,7 @@ class HistoryScreen extends StatelessWidget {
             icon: const Icon(Icons.delete),
             onPressed: () {
               onClearHistory();
+              // Navigate back to the previous screen after clearing history.
               Navigator.pop(context);
             },
           ),
@@ -34,8 +38,10 @@ class HistoryScreen extends StatelessWidget {
         ),
       )
           : ListView.builder(
-        itemCount: history.length,
+
+        itemCount: history.length,// Number of items in the history list.
         itemBuilder: (context, index) {
+          // Builds each list item.
           return ListTile(
             title: Text(
               history[index],
